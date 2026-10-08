@@ -1,40 +1,8 @@
-# Personal Portfolio & AI Assistant
+# Personal Portfolio & AI Chatbot
 
-A full-stack personal portfolio website with an integrated AI-powered chatbot that answers questions about the portfolio owner's profile, education, skills, projects, achievements, coding profiles, resume, and other portfolio information.
+A full-stack personal portfolio website with an integrated AI chatbot that answers questions specifically about my profile, skills, education, projects, achievements, coding profiles, and resume.
 
-The chatbot uses a Retrieval-Augmented Generation (RAG) architecture with MongoDB Atlas Vector Search for semantic retrieval and Ollama for local embeddings and LLM inference.
-
----
-
-## Overview
-
-This project combines a personal portfolio website with an AI assistant that allows visitors to interact with the portfolio through natural-language questions.
-
-The portfolio presents:
-
-- About Me
-- Education
-- Skills
-- Projects
-- Experience
-- Achievements
-- Coding Profiles
-- GitHub
-- LinkedIn
-- Resume
-- Contact Information
-
-The integrated chatbot can answer portfolio-specific questions such as:
-
-- What are Mandeep's main areas of interest?
-- What projects has Mandeep worked on?
-- Tell me about the Dataset Intelligence Copilot.
-- What technologies does he know?
-- What is his educational background?
-- Where can I find his coding profiles?
-- What was the first project you mentioned?
-
-The chatbot also supports follow-up questions by maintaining conversation history.
+The application combines a React frontend with an Express.js backend, MongoDB Atlas for data storage, MongoDB Atlas Vector Search for retrieval, and locally hosted Ollama models for embeddings and response generation.
 
 ---
 
@@ -42,265 +10,125 @@ The chatbot also supports follow-up questions by maintaining conversation histor
 
 ### Portfolio
 
-- Responsive personal portfolio website
-- Hero section with profile information
-- About section
-- Skills categorized by domain
-- Education section
-- Experience section
-- Projects section
-- Achievements section
+- Personal introduction and profile
+- Education
+- Skills
+- Projects
+- Achievements
 - Coding profiles
-- Social links
-- Resume access
+- GitHub and LinkedIn profiles
 - Contact information
-- Responsive navigation
-- Mobile-friendly interface
+- Resume access
 
 ### AI Chatbot
 
-- Portfolio-specific AI assistant
-- Natural-language question answering
-- Retrieval-Augmented Generation (RAG)
-- Semantic search using MongoDB Atlas Vector Search
-- Local embeddings using Ollama
-- Local LLM inference using Ollama
-- Persistent conversations
-- Follow-up questions using conversation history
-- New conversation support
-- Portfolio-grounded responses
-- Avoids inventing information not present in the portfolio
-- Redirects unrelated questions to portfolio-related topics
+The chatbot is specifically designed to answer questions about my portfolio.
 
-### Admin System
+It can answer questions about:
 
-The application includes an authenticated admin system for managing portfolio information.
+- Education
+- Skills and technologies
+- Projects
+- Project technologies and descriptions
+- Achievements
+- Coding profiles
+- GitHub and LinkedIn
+- Resume information
+- Personal interests
 
-The administrator can:
+The chatbot also maintains recent conversation history to support follow-up questions.
 
-- Log in securely
-- Manage profile information
-- Manage portfolio items
-- Manage education
-- Manage experience
-- Manage projects
-- Manage achievements
-- Update the resume
-- Rebuild the AI knowledge base
+### Admin Dashboard
 
-Public visitors do not require authentication.
+The application includes an authenticated admin interface for managing portfolio content.
+
+Admin functionality includes:
+
+- Profile management
+- Portfolio item management
+- Resume upload
+- Knowledge-base rebuilding
+
+Public visitors do not need to log in.
 
 ---
 
-# System Architecture
+# Architecture
 
 ```text
                          ┌─────────────────────┐
-                         │       Visitor       │
-                         │                     │
-                         │ Portfolio / Chatbot │
+                         │     React Frontend  │
+                         │   React + TypeScript │
                          └──────────┬──────────┘
                                     │
-                                    ▼
-                         ┌─────────────────────┐
-                         │   React Frontend    │
-                         │   Vite + TypeScript │
-                         └──────────┬──────────┘
-                                    │
-                              REST API Requests
-                                    │
+                                    │ REST API
                                     ▼
                          ┌─────────────────────┐
                          │   Express Backend   │
-                         │       Node.js       │
+                         │      Node.js        │
                          └──────────┬──────────┘
                                     │
-                    ┌───────────────┴────────────────┐
-                    │                                │
-                    ▼                                ▼
-          ┌──────────────────┐             ┌──────────────────┐
-          │   MongoDB Atlas  │             │      Ollama      │
-          │                  │             │                  │
-          │ Profile          │             │ embeddinggemma   │
-          │ PortfolioItems   │             │ qwen3:4b         │
-          │ Knowledge        │             │                  │
-          │ Conversations    │             └────────┬─────────┘
-          │ Admin            │                      │
-          └────────┬─────────┘                      │
-                   │                                │
-                   │       Vector Search            │
-                   └───────────────┬────────────────┘
-                                   │
-                                   ▼
-                         ┌─────────────────────┐
-                         │     RAG Pipeline    │
-                         │                     │
-                         │ Query Embedding     │
-                         │ Vector Retrieval    │
-                         │ Context + History   │
-                         │ LLM Generation      │
-                         └─────────────────────┘
+                  ┌─────────────────┼─────────────────┐
+                  │                 │                 │
+                  ▼                 ▼                 ▼
+          ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+          │ MongoDB      │  │ Vector Search │  │   Ollama     │
+          │ Atlas        │  │ Atlas         │  │ Local AI     │
+          │              │  │               │  │              │
+          │ Profile      │  │ Embeddings    │  │ qwen3:4b     │
+          │ Portfolio    │  │ Retrieval     │  │              │
+          │ Knowledge    │  │               │  │ embeddinggemma│
+          │ Conversations│  │               │  │              │
+          └──────────────┘  └──────────────┘  └──────────────┘
 ```
 
 ---
 
-# AI / RAG Architecture
+# RAG Pipeline
 
-The chatbot uses a Retrieval-Augmented Generation pipeline.
-
-## Query Flow
+The chatbot uses a Retrieval-Augmented Generation architecture.
 
 ```text
-User Question
-      │
-      ▼
-Generate Query Embedding
-      │
-      │ embeddinggemma
-      ▼
-MongoDB Atlas Vector Search
-      │
-      ▼
-Retrieve Relevant Portfolio Knowledge
-      │
-      ├───────────────┐
-      │               │
-      ▼               ▼
-Relevant Context   Conversation History
-      │               │
-      └───────┬───────┘
-              ▼
-          qwen3:4b
-              │
-              ▼
-       Generated Answer
-              │
-              ▼
-          User / UI
+Profile + Portfolio Data
+          │
+          ▼
+   Knowledge Builder
+          │
+          ▼
+   Text Chunking
+          │
+          ▼
+Embedding Generation
+   embeddinggemma
+          │
+          ▼
+MongoDB Atlas
+Vector Search
+          │
+          ▼
+Relevant Knowledge
+          │
+          ▼
+ Conversation History
+          │
+          ▼
+      qwen3:4b
+          │
+          ▼
+Profile-specific Response
 ```
 
-## Embedding Model
+The knowledge base is generated from the profile and portfolio data stored in MongoDB.
 
-```text
-embeddinggemma
-```
+### Current RAG configuration
 
-The embedding model generates 768-dimensional vectors.
-
-## LLM
-
-```text
-qwen3:4b
-```
-
-The model runs locally through Ollama.
-
-## Vector Database
-
-```text
-MongoDB Atlas Vector Search
-```
-
-The vector search index is:
-
-```text
-portfolio_index
-```
-
-Vector configuration:
-
-```json
-{
-  "fields": [
-    {
-      "type": "vector",
-      "path": "embedding",
-      "numDimensions": 768,
-      "similarity": "cosine"
-    }
-  ]
-}
-```
-
----
-
-# Knowledge Base
-
-The chatbot's knowledge base is generated from portfolio information stored in MongoDB.
-
-The ingestion pipeline combines information from:
-
-- Profile
-- Contact information
-- Social links
-- Coding profiles
-- Skills
-- Resume
-- Education
-- Experience
-- Projects
-- Achievements
-
-The combined content is split into smaller chunks and converted into embeddings.
-
-These embeddings are stored in the MongoDB `Knowledge` collection and retrieved using MongoDB Atlas Vector Search.
-
-The knowledge base should be rebuilt whenever the underlying portfolio information is significantly changed.
-
----
-
-# Conversation Management
-
-The chatbot supports multi-turn conversations.
-
-When a user sends the first message without a conversation ID, the backend creates a new conversation and returns a `conversationId`.
-
-Example request:
-
-```json
-{
-  "query": "What are Mandeep's projects?"
-}
-```
-
-Example response:
-
-```json
-{
-  "success": true,
-  "data": {
-    "conversationId": "...",
-    "answer": "..."
-  }
-}
-```
-
-Subsequent messages can use the returned conversation ID:
-
-```json
-{
-  "conversationId": "...",
-  "query": "What was the first project you mentioned?"
-}
-```
-
-The backend retrieves the existing conversation and provides relevant conversation history to the LLM.
-
-This allows interactions such as:
-
-```text
-User:
-What are Mandeep's projects?
-
-Assistant:
-...
-
-User:
-What was the first project you mentioned?
-
-Assistant:
-...
-```
+- Chunk size: `800`
+- Chunk overlap: `100`
+- Embedding model: `embeddinggemma`
+- Embedding dimensions: `768`
+- Vector similarity: `cosine`
+- Vector search candidates: `50`
+- Retrieved chunks: `5`
 
 ---
 
@@ -311,7 +139,8 @@ Assistant:
 - React
 - TypeScript
 - Vite
-- CSS / utility-based styling
+- Tailwind CSS
+- Lucide React
 
 ## Backend
 
@@ -320,29 +149,23 @@ Assistant:
 - MongoDB
 - Mongoose
 - JWT Authentication
-- REST APIs
+- bcrypt
+- Multer
 
 ## AI / RAG
 
-- LangChain
 - Ollama
-- embeddinggemma
-- qwen3:4b
+- `qwen3:4b`
+- `embeddinggemma`
+- LangChain
 - MongoDB Atlas Vector Search
-
-## Document Processing
-
-- unpdf
-- PDF text extraction
 
 ## Development Tools
 
 - Git
 - GitHub
-- VS Code
 - Postman
-- MongoDB Atlas
-- Ollama
+- VS Code
 
 ---
 
@@ -352,410 +175,131 @@ Assistant:
 Personal Portfolio/
 │
 ├── Backend/
-│   │
 │   ├── API/
-│   │   ├── admin.router.js
-│   │   └── viewer.router.js
-│   │
 │   ├── Config/
-│   │   └── database.js
-│   │
 │   ├── Middleware/
-│   │   └── verify-token.middleware.js
-│   │
 │   ├── Model/
-│   │   ├── admin.model.js
-│   │   ├── conversation.model.js
-│   │   ├── knowledge.model.js
-│   │   ├── portfolio.model.js
-│   │   └── profile.model.js
-│   │
-│   ├── Service/
-│   │   ├── embedding.service.js
-│   │   ├── knowledge-insertion.service.js
-│   │   ├── llm.service.js
-│   │   └── pdf-text-extraction.service.js
-│   │
-│   ├── package.json
-│   └── ...
+│   └── Service/
+│
+├── database/
+│   ├── seed.js
+│   └── rebuild-knowledge.js
 │
 ├── frontend/
-│   │
 │   ├── public/
-│   │
-│   ├── src/
-│   │   ├── api/
-│   │   ├── assets/
-│   │   ├── components/
-│   │   ├── context/
-│   │   ├── types/
-│   │   ├── utils/
-│   │   ├── App.tsx
-│   │   ├── main.tsx
-│   │   └── index.css
-│   │
-│   ├── package.json
-│   └── vite.config.ts
+│   └── src/
+│       ├── api/
+│       ├── assets/
+│       ├── components/
+│       ├── context/
+│       ├── types/
+│       ├── utils/
+│       ├── App.tsx
+│       ├── index.css
+│       └── main.tsx
 │
 ├── .env.example
 ├── .gitignore
 ├── package.json
 ├── package-lock.json
-└── README.md
+├── README.md
+└── server.js
 ```
 
 ---
 
-# Authentication & Authorization
+# Database Models
 
-The application separates public visitor access from authenticated administrative access.
+The backend uses MongoDB with the following primary models.
 
-## Public Users
+### Admin
 
-Visitors do not need to log in.
+Stores authenticated administrator credentials.
 
-They can:
+### Profile
 
-- View the portfolio
-- View projects
-- View education
-- View skills
-- View achievements
-- Access the resume
-- Use the chatbot
-- View contact information
-- Access public social and coding profiles
+Stores the main personal profile including:
 
-## Admin
+- Name
+- Title
+- Bio
+- Contact information
+- Social links
+- Coding profiles
+- Skills
+- Resume information
 
-The administrator authenticates using JWT.
+### PortfolioItem
 
-Protected admin routes use authentication middleware to verify the JWT token.
+Stores:
 
-The admin can manage portfolio information and rebuild the chatbot knowledge base.
+- Education
+- Experience
+- Projects
+- Achievements
 
----
+### Knowledge
 
-# API Endpoints
+Stores chunked portfolio information together with vector embeddings.
 
-## Viewer APIs
+### Conversation
 
-Base path:
-
-```text
-/api/viewer
-```
-
-### Get Profile
-
-```http
-GET /api/viewer/profile
-```
-
-Returns public profile information.
-
-### Get Portfolio Items
-
-```http
-GET /api/viewer/portfolios
-```
-
-Returns portfolio items such as education, experience, projects, and achievements.
-
-### Get Portfolio Item
-
-```http
-GET /api/viewer/portfolios/:id
-```
-
-Returns a specific portfolio item.
-
-### Get Contact Information
-
-```http
-GET /api/viewer/contact
-```
-
-Returns public contact information.
-
-### Get Resume
-
-```http
-GET /api/viewer/resume
-```
-
-Returns the public resume URL and filename.
-
-### Chat
-
-```http
-POST /api/viewer/chat
-```
-
-Example request:
-
-```json
-{
-  "query": "What are Mandeep's main areas of interest?"
-}
-```
-
-For an existing conversation:
-
-```json
-{
-  "conversationId": "conversation_id",
-  "query": "Tell me more about that project."
-}
-```
-
----
-
-# Admin APIs
-
-Base path:
-
-```text
-/api/admin
-```
-
-## Authentication
-
-```http
-POST /api/admin/auth/login
-POST /api/admin/auth/logout
-GET /api/admin/auth/me
-```
-
-## Profile
-
-```http
-POST /api/admin/profile
-GET /api/admin/profiles
-PUT /api/admin/profile
-```
-
-## Portfolio
-
-```http
-POST /api/admin/portfolios
-GET /api/admin/portfolios/:id
-PUT /api/admin/portfolios/:id
-DELETE /api/admin/portfolios/:id
-```
-
-## Resume
-
-```http
-PUT /api/admin/resume
-```
-
-The resume endpoint extracts text from the uploaded PDF using `unpdf`.
-
-## Knowledge Base
-
-```http
-POST /api/admin/knowledge/rebuild
-```
-
-This rebuilds the chatbot knowledge base using the latest portfolio information.
-
----
-
-# MongoDB Atlas
-
-The application uses MongoDB Atlas as its database.
-
-The main collections used by the application are:
-
-```text
-admins
-profiles
-portfolioitems
-knowledge
-conversations
-```
-
-The `Knowledge` collection stores embedded portfolio content used by the chatbot.
-
-MongoDB Atlas Vector Search retrieves semantically relevant information for each chatbot query.
-
-## Existing Database
-
-The project is configured to use an existing MongoDB Atlas database containing the required portfolio data and chatbot knowledge base.
-
-The evaluator should provide the MongoDB Atlas connection string through the `MONGODB_URI` environment variable.
-
-The database should contain the required portfolio data and the `portfolio_index` Vector Search index.
+Stores chatbot conversation history for supporting follow-up questions.
 
 ---
 
 # Prerequisites
 
-Before running the project, install the following:
+Before running the project locally, install:
 
-## Node.js
+- Node.js
+- MongoDB Atlas account
+- Ollama
 
-Node.js is required for the backend and frontend.
-
-Recommended:
-
-```text
-Node.js 20+
-```
-
-Verify:
-
-```bash
-node --version
-npm --version
-```
-
-## MongoDB Atlas
-
-A MongoDB Atlas database is required.
-
-The application connects to Atlas through:
-
-```text
-MONGODB_URI
-```
-
-## Ollama
-
-Install Ollama from:
-
-https://ollama.com/
-
-Verify the installation:
-
-```bash
-ollama --version
-```
+Deployment is not required for local evaluation.
 
 ---
 
 # Ollama Setup
 
+Install Ollama from:
+
+https://ollama.com/
+
+Make sure Ollama is running.
+
 Pull the required models:
 
 ```bash
 ollama pull qwen3:4b
-```
-
-```bash
 ollama pull embeddinggemma
 ```
 
-Verify:
+Verify the installed models:
 
 ```bash
 ollama list
 ```
 
-Both models should be available:
-
-```text
-qwen3:4b
-embeddinggemma
-```
-
-The application expects Ollama to be available at:
-
-```text
-http://localhost:11434
-```
-
-This can be changed using the `OLLAMA_BASE_URL` environment variable.
+Both `qwen3:4b` and `embeddinggemma` should be available.
 
 ---
 
-# Environment Variables
+# MongoDB Atlas Setup
 
-Environment variables containing credentials and secrets are intentionally excluded from the repository.
+Create a MongoDB Atlas cluster and obtain a connection string.
 
-Create a `.env` file using `.env.example` as a reference.
+Create a database for the project.
 
-Example:
+The chatbot uses MongoDB Atlas Vector Search for semantic retrieval.
 
-```env
-PORT=3000
-
-MONGODB_URI=your_mongodb_atlas_connection_string
-
-JWT_SECRET=replace_with_a_secure_secret
-JWT_EXPIRES_IN=1d
-
-NODE_ENV=development
-
-OLLAMA_BASE_URL=http://localhost:11434
-```
-
-## Important
-
-Do not commit the following to GitHub:
+Create a Vector Search index named:
 
 ```text
-.env
-```
-
-Only the example configuration should be committed:
-
-```text
-.env.example
-```
-
-Never expose:
-
-- MongoDB passwords
-- JWT secrets
-- API keys
-- Admin credentials
-- Other private environment variables
-
----
-
-# MongoDB Atlas Configuration
-
-The application uses an existing MongoDB Atlas database containing the portfolio data and chatbot knowledge base.
-
-The required collections include:
-
-```text
-profiles
-portfolioitems
-knowledge
-admins
-conversations
-```
-
-The Vector Search index must be configured as:
-
-```text
-Index Name:
 portfolio_index
 ```
 
-Vector field:
-
-```text
-Path:
-embedding
-```
-
-Dimensions:
-
-```text
-768
-```
-
-Similarity:
-
-```text
-cosine
-```
-
-Example index definition:
+Configure the index with:
 
 ```json
 {
@@ -770,89 +314,119 @@ Example index definition:
 }
 ```
 
-The evaluator should use the provided MongoDB Atlas connection details when running the project.
+The important settings are:
+
+```text
+Index Name: portfolio_index
+Vector Path: embedding
+Dimensions: 768
+Similarity: cosine
+```
 
 ---
 
-# Running the Project
+# Environment Variables
 
-## 1. Clone the Repository
+Create a `.env` file in the project root.
+
+Use `.env.example` as the reference.
+
+```env
+PORT=3000
+
+MONGODB_URI=your_mongodb_atlas_connection_string
+
+JWT_SECRET=replace_with_a_secure_secret
+
+JWT_EXPIRES_IN=1d
+
+NODE_ENV=development
+
+OLLAMA_BASE_URL=http://localhost:11434
+```
+
+Do not commit `.env` to GitHub.
+
+---
+
+# Installation
+
+Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Mandeep717/Personal-Portfolio.git
 ```
 
 Move into the project directory:
 
 ```bash
-cd "Personal Portfolio"
+cd Personal-Portfolio
 ```
 
----
-
-## 2. Install Backend Dependencies
-
-From the project root:
+Install root/backend dependencies:
 
 ```bash
 npm install
 ```
 
----
-
-## 3. Install Frontend Dependencies
+Install frontend dependencies:
 
 ```bash
 cd frontend
 npm install
-```
-
-Return to the project root:
-
-```bash
 cd ..
 ```
 
 ---
 
-## 4. Configure Environment Variables
+# Database Seeding
 
-Create:
+The repository includes a seed script that creates the initial profile and portfolio data.
 
-```text
-.env
-```
-
-using:
-
-```text
-.env.example
-```
-
-as a reference.
-
-Add the required MongoDB Atlas connection string and other configuration values.
-
----
-
-## 5. Start Ollama
-
-Make sure Ollama is running and the required models have been downloaded:
+Run:
 
 ```bash
-ollama list
+npm run seed
 ```
 
-Required:
+The seed creates:
 
-```text
-qwen3:4b
-embeddinggemma
-```
+- 1 profile
+- 9 portfolio items
+
+The portfolio items include education, projects, and achievements.
+
+The seed script does not contain administrator credentials.
+
+> **Important:** Configure your own MongoDB Atlas database in `.env` before running the seed script.
 
 ---
 
-## 6. Start the Backend
+# Build the Knowledge Base
+
+After seeding the database, generate the chatbot knowledge base:
+
+```bash
+npm run rebuild-knowledge
+```
+
+The process:
+
+1. Reads the profile from MongoDB
+2. Reads the portfolio items
+3. Builds the combined portfolio knowledge document
+4. Splits the document into chunks
+5. Generates embeddings using `embeddinggemma`
+6. Clears the existing knowledge chunks
+7. Stores the new chunks and embeddings in MongoDB
+
+A successful run reports the number of chunks created.
+
+---
+
+# Running the Application
+
+## Start the Backend
 
 From the project root:
 
@@ -860,140 +434,343 @@ From the project root:
 npm start
 ```
 
-The backend will start on the configured port.
+For development with Nodemon:
 
-For example:
+```bash
+npx nodemon server.js
+```
+
+The backend runs on:
 
 ```text
 http://localhost:3000
 ```
 
+Keep this terminal running.
+
 ---
 
-## 7. Start the Frontend
+## Start the Frontend
 
-Open another terminal:
+Open a second terminal in the project root:
 
 ```bash
-cd frontend
 npm run dev
 ```
 
-Vite will provide the local frontend URL.
-
-Typically:
+The frontend normally runs on:
 
 ```text
 http://localhost:5173
 ```
 
-Open the displayed URL in a browser.
+Open the displayed Vite URL in your browser.
 
 ---
 
-# Knowledge Base Rebuilding
+# Available Scripts
 
-The knowledge base should be rebuilt whenever the portfolio information changes significantly.
+From the project root:
 
-The admin API provides:
+### Start frontend
 
-```http
-POST /api/admin/knowledge/rebuild
+```bash
+npm run dev
 ```
 
-The process is:
+### Build frontend
+
+```bash
+npm run build
+```
+
+### Preview frontend build
+
+```bash
+npm run preview
+```
+
+### Start backend
+
+```bash
+npm start
+```
+
+### Seed database
+
+```bash
+npm run seed
+```
+
+### Rebuild chatbot knowledge base
+
+```bash
+npm run rebuild-knowledge
+```
+
+---
+
+# API Overview
+
+## Public Viewer APIs
 
 ```text
-MongoDB Portfolio Data
-        ↓
-Knowledge Generation
-        ↓
-Text Chunking
-        ↓
-Embedding Generation
-        ↓
-Knowledge Collection
-        ↓
+GET  /api/viewer/profile
+GET  /api/viewer/portfolios
+GET  /api/viewer/portfolios/:id
+GET  /api/viewer/contact
+GET  /api/viewer/resume
+POST /api/viewer/chat
+```
+
+These endpoints are available to portfolio visitors.
+
+---
+
+## Admin APIs
+
+Administrative operations are protected using JWT authentication.
+
+Admin functionality includes:
+
+- Authentication
+- Profile management
+- Portfolio management
+- Resume upload
+- Knowledge-base rebuilding
+
+The knowledge-base rebuild endpoint is protected and is not exposed as a public operation.
+
+---
+
+# Chatbot Request Flow
+
+A chatbot request follows this flow:
+
+```text
+User Question
+      │
+      ▼
+Create / Retrieve Conversation
+      │
+      ▼
+Generate Query Embedding
+      │
+      ▼
 MongoDB Atlas Vector Search
+      │
+      ▼
+Retrieve Relevant Portfolio Knowledge
+      │
+      ▼
+Combine Retrieved Context
++ Conversation History
+      │
+      ▼
+qwen3:4b
+      │
+      ▼
+Generate Answer
+      │
+      ▼
+Save Conversation
+      │
+      ▼
+Return Response
 ```
 
-The existing evaluation database already contains the required knowledge data, so rebuilding is only necessary after changing the underlying portfolio information.
+The chatbot is specifically designed for portfolio-related questions.
+
+It uses retrieved portfolio information as its primary source of information and is instructed not to invent personal details.
 
 ---
 
-# Resume Handling
+# Conversation History
 
-The portfolio includes a publicly accessible resume.
+The chatbot supports contextual follow-up questions.
 
-The resume workflow is:
+For example:
 
 ```text
-Resume PDF
-    ↓
-Admin Upload
-    ↓
-unpdf
-    ↓
-Text Extraction
-    ↓
-MongoDB
-    ↓
-Knowledge Ingestion
-    ↓
-Chatbot
+User:
+Which projects use AI?
+
+Assistant:
+...
+
+User:
+What technologies are used in the first one?
+
+Assistant:
+...
 ```
 
-The public resume endpoint exposes the resume URL and filename.
-
-The extracted resume text is used internally as part of the chatbot knowledge base.
+Recent conversation messages are supplied to the language model so that follow-up questions can be interpreted in context.
 
 ---
 
-# Security Considerations
+# Resume
 
-The following information should never be committed to GitHub:
+The portfolio provides direct access to the resume.
 
-- MongoDB credentials
-- JWT secrets
-- API keys
-- Admin passwords
-- Private environment variables
+The resume URL is stored as part of the profile data and is also available through the public resume endpoint.
 
-The `.gitignore` file excludes environment files and dependencies from version control.
+The configured resume file must be accessible to viewers.
 
-Admin authentication is protected using JWT-based authorization.
+For Google Drive-hosted resumes, the file should be shared with:
 
-Public users do not have access to administrative routes.
-
-The public profile response does not expose the extracted resume text.
+```text
+Anyone with the link → Viewer
+```
 
 ---
 
-# Testing the Application
+# Security
 
-After starting the application, verify the main portfolio sections:
+The project implements:
+
+- JWT-based admin authentication
+- HTTP-only authentication cookies
+- Password hashing using bcrypt
+- Protected admin routes
+- Public read-only viewer routes
+- Environment variables for secrets
+- No credentials committed to the repository
+
+The `.env` file is excluded from Git using `.gitignore`.
+
+---
+
+# Design Approach
+
+The application separates the public portfolio experience from administrative functionality.
 
 ```text
-[ ] Hero
-[ ] About
-[ ] Skills
-[ ] Education
-[ ] Experience
-[ ] Projects
-[ ] Achievements
-[ ] Coding Profiles
-[ ] Resume
-[ ] Contact
-[ ] GitHub
-[ ] LinkedIn
+                 ┌─────────────────┐
+                 │ Public Visitor  │
+                 └────────┬────────┘
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │ React Frontend  │
+                 └────────┬────────┘
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │ Viewer REST API │
+                 └────────┬────────┘
+                          │
+              ┌───────────┴───────────┐
+              │                       │
+              ▼                       ▼
+       Portfolio Data             AI Chat
+                                      │
+                                      ▼
+                                  RAG Pipeline
+                                      │
+                          ┌───────────┴───────────┐
+                          ▼                       ▼
+                    Vector Search            Ollama LLM
 ```
 
-## Test the Chatbot
+The AI chatbot is intentionally focused on the portfolio rather than functioning as a general-purpose assistant.
 
-Try:
+This keeps responses grounded in the available profile information.
+
+---
+
+# Local Evaluation
+
+For a fresh local setup, follow these steps in order.
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Mandeep717/Personal-Portfolio.git
+cd Personal-Portfolio
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+cd frontend
+npm install
+cd ..
+```
+
+### 3. Configure environment variables
+
+Create `.env` in the project root:
+
+```env
+PORT=3000
+MONGODB_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=replace_with_a_secure_secret
+JWT_EXPIRES_IN=1d
+NODE_ENV=development
+OLLAMA_BASE_URL=http://localhost:11434
+```
+
+### 4. Start Ollama
+
+Make sure Ollama is running and install the models:
+
+```bash
+ollama pull qwen3:4b
+ollama pull embeddinggemma
+```
+
+### 5. Configure MongoDB Atlas Vector Search
+
+Create:
 
 ```text
-What are Mandeep's main areas of interest?
+portfolio_index
+```
+
+with the 768-dimensional vector configuration described above.
+
+### 6. Seed the database
+
+```bash
+npm run seed
+```
+
+### 7. Build the knowledge base
+
+```bash
+npm run rebuild-knowledge
+```
+
+### 8. Start the backend
+
+```bash
+npm start
+```
+
+### 9. Start the frontend
+
+Open another terminal:
+
+```bash
+npm run dev
+```
+
+### 10. Open the application
+
+```text
+http://localhost:5173
+```
+
+---
+
+# Example Chatbot Questions
+
+The following questions can be used to test the chatbot:
+
+```text
+What is Mandeep's educational background?
 ```
 
 ```text
@@ -1001,83 +778,87 @@ What projects has Mandeep worked on?
 ```
 
 ```text
-Tell me about the Dataset Intelligence Copilot.
+What technologies were used in Dataset Intelligence Copilot?
 ```
 
 ```text
-What technologies does he use?
+What is PAIMANA?
 ```
 
 ```text
-What is his educational background?
+What are Mandeep's coding profiles?
 ```
-
-## Test Conversation Context
-
-First ask:
 
 ```text
-What are Mandeep's projects?
+What is Mandeep's GitHub profile?
 ```
-
-Then ask:
 
 ```text
-What was the first project you mentioned?
+What are Mandeep's technical skills?
 ```
 
-The second question should use the existing conversation context.
+```text
+Which project uses RAG?
+```
+
+Follow-up questions can also be tested:
+
+```text
+User:
+Which projects use AI?
+
+Assistant:
+...
+
+User:
+What technologies are used in the first one?
+
+Assistant:
+...
+```
 
 ---
 
-# Responsive Design
+# Key Implementation Highlights
 
-The frontend is designed for:
+### Profile-specific AI
 
-- Desktop
-- Laptop
-- Tablet
-- Mobile
+The chatbot is not a generic AI assistant. Its knowledge is generated specifically from the portfolio's profile and project information.
 
-The navigation, portfolio sections, project cards, resume section, and chatbot interface adapt to different screen sizes.
+### Retrieval-Augmented Generation
 
----
+Relevant information is retrieved using vector similarity before generating the response.
 
-# Project Objective
+### Local AI
 
-The objective of this project is to build a personal portfolio that goes beyond a conventional static website by integrating an AI assistant capable of answering portfolio-specific questions.
+The project uses Ollama for both embeddings and language-model inference, avoiding dependency on paid external LLM APIs during local execution.
 
-Instead of requiring visitors to manually navigate through multiple sections, the chatbot provides a conversational interface to the same information contained within the portfolio.
+### MongoDB Vector Search
 
-The project demonstrates the integration of:
+MongoDB Atlas stores the knowledge embeddings and performs semantic retrieval.
 
-- Full-stack web development
-- REST APIs
-- Authentication
-- MongoDB
-- Vector databases
-- Embeddings
-- Retrieval-Augmented Generation
-- Local LLM inference
-- PDF processing
-- Conversational AI
+### Contextual Conversations
+
+The chatbot stores recent messages and uses them to understand follow-up questions.
+
+### Protected Administration
+
+Only authenticated administrators can modify portfolio information or rebuild the knowledge base.
 
 ---
 
 # Future Improvements
 
-Potential future improvements include:
+Possible future improvements include:
 
-- Cloud-based LLM deployment
+- Cloud deployment
+- Cloud-hosted LLM inference
 - Streaming chatbot responses
-- Advanced conversation management
-- Chatbot usage analytics
-- Automated deployment
-- Improved semantic retrieval and ranking
-- More advanced document ingestion
-- Additional portfolio management functionality
-
-These improvements are outside the scope of the current implementation.
+- More advanced semantic retrieval
+- Chatbot analytics
+- Additional portfolio content management
+- Automated knowledge-base updates after portfolio changes
+- Improved conversation management
 
 ---
 
@@ -1089,16 +870,16 @@ These improvements are outside the scope of the current implementation.
 
 VNR Vignana Jyothi Institute of Engineering & Technology
 
-### Profiles
+### GitHub
 
-- GitHub: https://github.com/Mandeep717
-- LinkedIn: https://www.linkedin.com/in/mandeep-boddu-6862183a5
-- CodeChef: https://www.codechef.com/users/rag_bass_82
-- LeetCode: https://leetcode.com/u/Manfooty_17
-- Codeforces: https://codeforces.com/profile/ManB717
+https://github.com/Mandeep717
+
+### LinkedIn
+
+https://www.linkedin.com/in/mandeep-boddu-6862183a
 
 ---
 
 # License
 
-This project is intended as a personal portfolio and academic/technical project.
+This project is intended as a personal portfolio and technical project submission.
