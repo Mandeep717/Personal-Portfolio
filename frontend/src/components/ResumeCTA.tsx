@@ -44,7 +44,7 @@ export const ResumeCTA: React.FC<ResumeCTAProps> = ({ resume }) => {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               {/* Main View Resume Button */}
               <a
-                href={resume.url}
+                href={resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl bg-white text-slate-950 font-bold text-sm hover:bg-slate-100 hover:scale-102 transition-all shadow-lg active:scale-95 group w-full sm:w-auto"
@@ -55,7 +55,7 @@ export const ResumeCTA: React.FC<ResumeCTAProps> = ({ resume }) => {
               </a>
 
               {/* File Info Pill */}
-              {resume.fileName && (
+              {resume?.fileName && (
                 <div className="text-xs font-mono text-slate-400 flex items-center gap-1.5 py-2 px-3 rounded-lg bg-slate-800/60 border border-slate-700/60">
                   <Download className="w-3.5 h-3.5 text-cyan-400" />
                   <span>{resume.fileName}</span>
