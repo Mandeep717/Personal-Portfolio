@@ -2,7 +2,7 @@ import React from 'react';
 import { FileText, ExternalLink, Download, Sparkles } from 'lucide-react';
 import type { Resume } from '../types';
 const FALLBACK_RESUME_URL =
-  "https://drive.google.com/file/d/1od5YDDxdaXuits5ISQZkzVRe3etfRXmM/view?usp=drive_link";
+  "https://drive.google.com/file/d/1od5YDDXdaXuits5ISQZkzVRe3etfRXmM/view?usp=sharing";
 
 interface ResumeCTAProps {
   resume?: Resume;

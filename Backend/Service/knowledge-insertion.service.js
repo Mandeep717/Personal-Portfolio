@@ -163,36 +163,49 @@ function buildPortfolioArticle(profile, portfolioItems) {
 
 
 export async function ingestPortfolioKnowledge() {
+
     // 1. Get profile
     const profile = await ProfileModel
         .findOne()
         .lean()
+
     if (!profile) {
         throw new Error("Profile not found")
     }
+
+
     // 2. Get portfolio items
     const portfolioItems = await PortfolioItemModel
         .find()
         .sort({ displayOrder: 1 })
         .lean()
+
+
     // 3. Build knowledge article
     const article = buildPortfolioArticle(
         profile,
         portfolioItems
     )
+
     if (!article) {
         throw new Error("No portfolio information available")
     }
+
+
     // 4. Split article into chunks
     const documents = await textSplitter.createDocuments([
         article
     ])
+
     const chunks = documents
         .map(document => document.pageContent.trim())
         .filter(Boolean)
+
     if (!chunks.length) {
         throw new Error("No knowledge chunks generated")
     }
+
+
     // 5. Generate embeddings
     const embeddedChunks = await generateChunkEmbeddings(
         chunks,
@@ -201,12 +214,35 @@ export async function ingestPortfolioKnowledge() {
             section: "combined"
         }
     )
+
+
+    // 6. Replace existing knowledge
     await KnowledgeModel.deleteMany({})
+
     await KnowledgeModel.insertMany(
         embeddedChunks
     )
+
+
     return {
         success: true,
         chunksCreated: embeddedChunks.length
     }
+}
+
+
+// Rebuild the complete portfolio knowledge base.
+//
+// This function intentionally reuses the existing ingestion pipeline.
+// It is exposed separately so setup scripts can regenerate embeddings
+// after portfolio data has been seeded or changed.
+export async function rebuildKnowledgeBase() {
+
+    const result = await ingestPortfolioKnowledge()
+
+    if (!result.success) {
+        throw new Error("Failed to rebuild knowledge base")
+    }
+
+    return result
 }
